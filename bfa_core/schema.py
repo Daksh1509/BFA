@@ -1,7 +1,7 @@
 # bfa_core/schema.py
 
 CANONICAL_FIELDS = {
-    "Period": "Period (time label: Q1-2026, 2026-01, etc.)",
+    "Period": "Period (time label: Q1-2026, 2026, FY2025 etc.)",
 
     # Income statement related
     "Revenue": "Total revenue / sales",
@@ -11,7 +11,7 @@ CANONICAL_FIELDS = {
     "Rent": "Office / infrastructure rent",
     "OtherOpex": "Other operating expenses (optional)",
     "InterestExpense": "Interest on debt (optional)",
-    "TaxExpense": "Tax expense (optional, we can also estimate)",
+    "TaxExpense": "Tax expense (optional, can be estimated)",
 
     # Balance sheet related
     "CurrentAssets": "Current assets",

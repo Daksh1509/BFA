@@ -2,12 +2,13 @@
 
 import pandas as pd
 from typing import Dict, List
+
 from .schema import CANONICAL_FIELDS
 
 
 def apply_mapping_and_clean(df_raw: pd.DataFrame, mapping: Dict[str, str]) -> pd.DataFrame:
     """
-    Stage 1C – Apply mapping & basic cleaning:
+    Stage 1C – Apply mapping and do basic cleaning:
     - Create DataFrame with canonical column names
     - Copy data from user's columns
     - Convert numeric fields
@@ -21,7 +22,7 @@ def apply_mapping_and_clean(df_raw: pd.DataFrame, mapping: Dict[str, str]) -> pd
             user_col = mapping[canonical]
             df_std[canonical] = df_raw[user_col]
         else:
-            df_std[canonical] = None  # missing -> NaN later
+            df_std[canonical] = None
 
     # 2) Convert numeric fields
     numeric_fields = [

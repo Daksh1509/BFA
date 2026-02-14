@@ -3,38 +3,38 @@
 from typing import Dict, List, Optional
 import json
 import os
+
 from .schema import CANONICAL_FIELDS
 
 
 def interactive_column_mapping(user_columns: List[str]) -> Dict[str, str]:
     """
-    Stage 1B – Ask the user to map their columns to canonical fields.
-    Returns dict: { canonical_field -> user_column_name }
+    Stage 1B – Ask the user to map their columns/labels to canonical fields.
+    Returns dict: { canonical_field -> user_column_or_item }
     """
-    print("\nDetected columns in your file:")
+    print("\nDetected columns/items in your data:")
     for col in user_columns:
         print(f"  - {col}")
 
-    print("\nNow we will map your columns to BFA's standard fields.")
+    print("\nNow we will map your data to BFA's standard fields.")
     print("If you don't have a field, just press Enter to skip.\n")
 
     mapping: Dict[str, str] = {}
 
     for canonical_name, description in CANONICAL_FIELDS.items():
-        prompt = f'Which column corresponds to "{canonical_name}" ({description})? '
+        prompt = f'Which column/item corresponds to "{canonical_name}" ({description})? '
         user_input = input(prompt).strip()
 
         if user_input == "":
-            # user skipped this field
             continue
 
         if user_input not in user_columns:
-            print(f'  WARNING: "{user_input}" is not one of the detected columns. Skipping.')
+            print(f'  WARNING: "{user_input}" is not in the detected list. Skipping.')
             continue
 
         mapping[canonical_name] = user_input
 
-    print("\nFinal mapping (canonical -> your column):")
+    print("\nFinal mapping (canonical -> your column/item):")
     for k, v in mapping.items():
         print(f"  {k} -> {v}")
 

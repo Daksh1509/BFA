@@ -2,53 +2,46 @@
 
 from pathlib import Path
 
-from bfa_core.intake import load_raw_financial_file, list_columns
-from bfa_core.mapping import interactive_column_mapping, save_mapping, load_mapping
-from bfa_core.standardizer import apply_mapping_and_clean
+from bfa_core.extractor import extract_canonical_financials
 from bfa_core.numeric_processing import (
     standardize_numeric,
     build_income_statement,
     compute_core_ratios,
     generate_health_summary,
 )
+from bfa_core.growth_metrics import add_growth_and_rule_of_40
 
 
 if __name__ == "__main__":
-    # --------- Configuration ----------
-    raw_filepath = "data/sample_budget.xlsx"
-    mapping_filepath = "data/column_mapping.json"
-    # ----------------------------------
+    # Choose input file (can be 1 year only, or multiple years with projections)
+    raw_filepath = "data/sample_financials.xlsx"
+    analysis_year = 2026  # or None to use current calendar year
 
-    # Stage 1A – load raw file
-    df_raw = load_raw_financial_file(raw_filepath)
-    user_cols = list_columns(df_raw)
+    # 1) Extract canonical financials (handles layout, mapping, 1-year vs multi-year)
+    df_canon = extract_canonical_financials(
+        filepath=raw_filepath,
+        mapping_path="data/column_mapping.json",
+        analysis_year=analysis_year,
+    )
 
-    # Try to reuse existing mapping
-    mapping = load_mapping(mapping_filepath)
+    print("\n=== Canonical table (with Year / IsFuture) ===")
+    print(df_canon)
 
-    if mapping is None:
-        # Stage 1B – ask user to map columns
-        mapping = interactive_column_mapping(user_cols)
-        save_mapping(mapping, mapping_filepath)
-        print(f"\nMapping saved to {mapping_filepath}")
-    else:
-        print(f"Loaded existing mapping from {mapping_filepath}")
-
-    # Stage 1C – apply mapping & cleaning
-    df_std = apply_mapping_and_clean(df_raw, mapping)
-
-    # Stage 2B – numeric processing
-    df_std = standardize_numeric(df_std)
+    # 2) Numeric engine
+    df_std = standardize_numeric(df_canon)
     df_is = build_income_statement(df_std)
     df_ratios = compute_core_ratios(df_is)
+    df_ratios = add_growth_and_rule_of_40(df_ratios)
 
-    print("=== Canonical data with ratios ===")
+    print("\n=== Ratios table ===")
     print(df_ratios)
 
+    # 3) Health summary based on last period
     summary = generate_health_summary(df_ratios)
     print("\n=== Health Summary ===")
     print(summary)
 
+    # 4) Save outputs
     Path("outputs").mkdir(exist_ok=True)
     df_ratios.to_csv("outputs/bfa_output_with_ratios.csv", index=False)
     with open("outputs/health_summary.txt", "w") as f:
