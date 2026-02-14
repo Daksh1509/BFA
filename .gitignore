@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+
+# VS Code settings
+.vscode/
+
+# Mac / Windows junk
+.DS_Store
+Thumbs.db
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Local data and outputs (optional – keep if you don't want to commit sample data/results)
+data/column_mapping.json
+outputs/
